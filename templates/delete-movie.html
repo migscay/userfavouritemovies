@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <br>
+  <div class="row row-cols-1 row-cols-md-3">
+    <div class="col mb-4">
+      <div class="card">
+        <img src={{movie.Movie.img_url}} class="card-img-top" id="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title" id="title">{{movie.Movie.title}}</h5>
+          <p class="card-text" id="year">Year : {{movie.Movie.year}}<br>
+          </p>
+          <p id="genre">
+            Genre : {{movie.Movie.genre}}<br>
+          </p>
+          <p id="rating">
+            IMDB Rating : {{movie.Movie.imdb_rating}}<br>
+          </p>
+          <p id="details">
+            Imdb : <a href="http://www.imdb.com/title/{{movie.Movie.imdb_id}}" target="_blank">
+            {{movie.Movie.imdb_id}} Details</a>
+          </p>
+          <p id="review">
+            My review : {{movie.UserMovie.user_review}}<br>
+          </p>
+          <p id="my_rating">
+            My Rating : {{movie.UserMovie.user_rating}}<br>
+          </p>
+          <br>
+          <form action="{{ url_for('delete_movie', user_id=user_id, imdb_id=imdb_id) }}" method="post" >
+            <button class="btn btn-danger" type="submit">Remove</button>
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
+          </form>
+         </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock%}
