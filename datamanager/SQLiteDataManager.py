@@ -1,6 +1,4 @@
 from .data_manager_interface import DataManagerInterface
-# from flask import Flask
-# from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_
 from data.data_models import db, User, UserMovie, Movie
 from sqlalchemy.exc import IntegrityError
@@ -76,15 +74,7 @@ class SQLiteDataManager(DataManagerInterface):
         except IntegrityError as e:
             db.session.rollback()
 
-    def update_movie(self, user_movie):
-        """
-        update user movies
-        :param: user_movie object
-        :return:
-        """
-        return True
-
-    def delete_movie(self, user_movie):
+    def delete_usermovie(self, user_movie):
         """
         deletes user movie record
         :param: user_movie object
@@ -93,6 +83,24 @@ class SQLiteDataManager(DataManagerInterface):
         db.session.delete(user_movie)
         db.session.commit()
 
+    def update_movie(self):
+        return True
+
+    def delete_movie(self, movie):
+        """
+        deletes user movie record
+        :param: user_movie object
+        :return:
+        """
+        db.session.delete(movie)
+        db.session.commit()
+
     def get_movie(self, imdb_id):
         return db.session.query(Movie).filter(Movie.imdb_id == imdb_id).first()
 
+    def check_movie_in_usermovie(self, imdb_id):
+        user_movie = db.session.query(UserMovie).filter(UserMovie.imdb_id == imdb_id).first()
+        if user_movie:
+            return True
+        else:
+            return False

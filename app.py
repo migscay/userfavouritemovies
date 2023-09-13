@@ -15,8 +15,12 @@ app.register_blueprint(api, url_prefix='/api')
 bootstrap = Bootstrap(app)
 SECRET_KEY = os.urandom(32)
 app.config['SECRET_KEY'] = SECRET_KEY
+# localhost and codio deploy
 file_path = os.path.abspath(os.getcwd())+"/data/user_movies.sqlite"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+file_path
+# pythonanywhere deploy
+# data_folder = os.path.expanduser('~/mysite/data')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(data_folder, 'user_movies.sqlite')
 
 db.init_app(app)
 
@@ -53,11 +57,8 @@ def search_movie(user_id):
 
     if request.method == "POST":
         user_imdb = data_manager.get_user_imdb_ids(user_id)
-        print(f"user_imdb = {user_imdb}")
         user_imdb_ids = [imdb_id for user_id, imdb_id in user_imdb]
-        print(f"user_imdb_ids = {user_imdb_ids}")
         title = request.form['title']
-        print(f"request.form['title'] = {request.form['title']}")
 
         try:
             json_resp = search_req(title)
@@ -124,7 +125,13 @@ def delete_movie(user_id, imdb_id):
     if request.method == "POST":
         # Delete User_movie by user_id and imdb_id
         user_movie = data_manager.get_user_movie(user_id, imdb_id)
-        data_manager.delete_movie(user_movie.UserMovie)
+        data_manager.delete_usermovie(user_movie.UserMovie)
+        # check if movie is a favourite of any user
+        movie_still_user_favourite = data_manager.check_movie_in_usermovie(imdb_id)
+        if not movie_still_user_favourite:
+            movie = data_manager.get_movie(imdb_id)
+            data_manager.delete_movie(movie)
+
         return redirect(url_for('list_user_movies', user_id=user_id))
 
     user_movie = data_manager.get_user_movie(user_id, imdb_id)
